@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Express Logger Middleware Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="top-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+        </div>
+        <div>
+          <h1>Logger <span>Middleware</span></h1>
+          <p class="subtitle">Request Method & Time Monitor</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <div class="status-badge pulse">
+          <span class="status-dot"></span>
+          <span>Middleware Active</span>
+        </div>
+        <button id="themeToggleBtn" class="btn btn-secondary btn-icon" title="Toggle Theme">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="dashboard-grid">
+      <!-- Top Stats Bar -->
+      <section class="stats-row">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Total Requests</span>
+            <div class="stat-icon total"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          </div>
+          <div class="stat-value" id="totalRequests">0</div>
+          <div class="stat-footer">Logged since server start</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">GET Requests</span>
+            <div class="stat-icon get"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 13l5 5 5-5M12 18V6"/></svg></div>
+          </div>
+          <div class="stat-value" id="getRequests">0</div>
+          <div class="stat-footer">Read operations</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">POST / PUT / DELETE</span>
+            <div class="stat-icon write"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+          </div>
+          <div class="stat-value" id="writeRequests">0</div>
+          <div class="stat-footer">Mutating requests</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-title">Avg Latency</span>
+            <div class="stat-icon latency"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          </div>
+          <div class="stat-value" id="avgLatency">0 ms</div>
+          <div class="stat-footer">Response time</div>
+        </div>
+      </section>
+
+      <!-- Left Column: Request Dispatcher & Presets -->
+      <div class="left-column">
+        <!-- Request Dispatcher -->
+        <section class="card glass-card">
+          <div class="card-header">
+            <h2>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Request Dispatcher
+            </h2>
+            <span class="pill-tag">Test Playground</span>
+          </div>
+          
+          <form id="requestForm" class="request-form">
+            <div class="input-group">
+              <select id="requestMethod" class="method-select">
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+                <option value="PUT">PUT</option>
+                <option value="DELETE">DELETE</option>
+              </select>
+              <input type="text" id="requestUrl" class="url-input" value="/api/users" placeholder="/api/endpoint">
+              <button type="submit" class="btn btn-primary" id="sendRequestBtn">
+                Send Request
+              </button>
+            </div>
+
+            <div class="body-group" id="bodyGroup" style="display: none;">
+              <label for="requestBody">Request Body (JSON)</label>
+              <textarea id="requestBody" rows="3" placeholder='{"name": "Jane Doe", "role": "Designer"}'></textarea>
+            </div>
+          </form>
+
+          <!-- Quick Presets -->
+          <div class="presets-section">
+            <div class="presets-header">
+              <span>Quick Presets:</span>
+              <button type="button" class="btn btn-outline btn-sm" id="batchTestBtn">
+                ⚡ Fire Batch Tests
+              </button>
+            </div>
+            <div class="preset-buttons">
+              <button class="preset-btn get" data-method="GET" data-url="/api/users">GET /api/users</button>
+              <button class="preset-btn post" data-method="POST" data-url="/api/users" data-body='{"name": "David Bowie", "role": "Artist"}'>POST /api/users</button>
+              <button class="preset-btn put" data-method="PUT" data-url="/api/users/1" data-body='{"status": "Promoted"}'>PUT /api/users/1</button>
+              <button class="preset-btn delete" data-method="DELETE" data-url="/api/users/2">DELETE /api/users/2</button>
+              <button class="preset-btn get" data-method="GET" data-url="/api/system/status">GET /api/system/status</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Source Code Inspector -->
+        <section class="card glass-card code-card">
+          <div class="card-header">
+            <h2>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Middleware Source Code
+            </h2>
+            <button class="btn btn-secondary btn-sm" id="copyCodeBtn">
+              Copy Code
+            </button>
+          </div>
+          <div class="code-container">
+            <pre><code id="middlewareCode">Loading middleware/logger.js...</code></pre>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Live Console Feed -->
+      <div class="right-column">
+        <section class="card glass-card console-card">
+          <div class="card-header">
+            <h2>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              Live Logger Terminal
+            </h2>
+            <div class="console-controls">
+              <label class="auto-refresh-label">
+                <input type="checkbox" id="autoRefreshToggle" checked>
+                <span>Auto Sync</span>
+              </label>
+              <button class="btn btn-secondary btn-sm" id="clearLogsBtn">
+                Clear Terminal
+              </button>
+            </div>
+          </div>
+
+          <div class="console-body" id="consoleBody">
+            <div class="terminal-empty" id="terminalEmpty">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p>No request logs recorded yet. Send a request above to see live logs.</p>
+            </div>
+            <div class="log-entries" id="logEntries"></div>
+          </div>
+          <div class="console-footer">
+            <span>Terminal stdout format: <code>[TIMESTAMP] METHOD: &lt;METHOD&gt; | URL: &lt;PATH&gt;</code></span>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
