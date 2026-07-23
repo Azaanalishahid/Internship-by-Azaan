@@ -1,0 +1,363 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1400px;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .charts-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+/* Chart Card Base */
+.chart-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Sales Card - Blue gradient */
+.sales-card {
+  background: linear-gradient(145deg, #3461ff 0%, #2046d8 100%);
+  color: white;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 8px;
+}
+
+.chart-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+}
+
+.chart-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.chart-area {
+  padding: 0 12px;
+}
+
+.sales-footer {
+  display: flex;
+  gap: 32px;
+  padding: 16px 20px 20px;
+}
+
+.sales-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sales-stat-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+}
+
+.sales-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Revenue Card */
+.revenue-card {
+  background: white;
+}
+
+.chart-header-plain {
+  padding: 20px 20px 4px;
+}
+
+.chart-header-plain h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.donut-wrapper {
+  padding: 8px 0 16px;
+}
+
+.pie-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.pie-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Traffic Card */
+.traffic-card {
+  background: white;
+  position: relative;
+}
+
+.traffic-list {
+  padding: 12px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.traffic-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.traffic-label {
+  width: 64px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.traffic-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: #eef0f8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.traffic-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.traffic-val {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  width: 32px;
+  text-align: right;
+}
+
+/* Promo Card (floating) */
+.promo-card {
+  margin: 0 16px 16px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.promo-card-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.promo-card-close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.promo-card-preview {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  position: relative;
+  flex-direction: column;
+}
+
+.promo-preview-bar {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.promo-preview-bar.orange { background: #f59e0b; width: 80%; }
+.promo-preview-bar.blue { background: #3461ff; width: 60%; }
+.promo-preview-bar.green { background: #10b981; width: 45%; }
+
+.promo-chip {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: #e8eeff;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #3461ff;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.promo-card-text p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+}
+
+.promo-buy-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3461ff, #6c63ff);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+
+.promo-buy-btn:hover { opacity: 0.9; }
+
+.pro-badge {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+/* Chart tooltip */
+.chart-tooltip {
+  background: rgba(0,0,0,0.75);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Promo Bottom Banner */
+.promo-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #1a1a2e, #0f3460);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 14px 24px;
+  font-size: 14px;
+  z-index: 200;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}
+
+.promo-banner strong {
+  color: #fcd34d;
+}
+
+.promo-banner-btn {
+  background: linear-gradient(135deg, #3461ff, #6c63ff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+
+.promo-banner-btn:hover { opacity: 0.9; }
+
+.promo-banner-close {
+  position: absolute;
+  right: 20px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: background 0.15s;
+}
+
+.promo-banner-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Extra padding to account for promo banner */
+.dashboard {
+  padding-bottom: 70px;
+}

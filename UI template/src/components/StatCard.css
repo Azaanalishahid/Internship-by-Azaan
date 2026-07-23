@@ -1,0 +1,76 @@
+.stat-card {
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card-top {
+  padding: 20px 20px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.stat-earnings { color: #f59e0b; }
+.stat-task { color: #ef4444; }
+.stat-views { color: #10b981; }
+.stat-downloads { color: #3b82f6; }
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.stat-card-icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f8f9fd;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-top: auto;
+}
+
+.badge-orange { background: linear-gradient(135deg, #f59e0b, #f97316); }
+.badge-red    { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.badge-green  { background: linear-gradient(135deg, #10b981, #059669); }
+.badge-blue   { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+
+.badge-arrow {
+  display: flex;
+  align-items: center;
+}
