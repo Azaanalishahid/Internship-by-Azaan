@@ -1,0 +1,13 @@
+{
+  "name": "book-store-crud-api",
+  "version": "1.0.0",
+  "description": "CRUD APIs for a Book Store",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

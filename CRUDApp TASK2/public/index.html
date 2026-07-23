@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookVault - Book Store Management & CRUD API Explorer</title>
+  <meta name="description" content="A modern, high-performance Book Store CRUD management application with interactive API documentation and analytics dashboard.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Glow FX -->
+  <div class="bg-glow blob-1"></div>
+  <div class="bg-glow blob-2"></div>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-book-bookmark"></i>
+        </div>
+        <div class="brand-text">
+          <h1>BookVault</h1>
+          <span class="badge badge-api">CRUD API v1.0</span>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar -->
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search by title, author, genre, ISBN..." autocomplete="off">
+        <button id="clearSearchBtn" class="btn-icon hidden" title="Clear Search"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="nav-actions">
+        <button id="apiDocsBtn" class="btn btn-secondary">
+          <i class="fa-solid fa-code"></i> <span>API Docs</span>
+        </button>
+        <button id="seedDataBtn" class="btn btn-secondary" title="Seed 8 Sample Books">
+          <i class="fa-solid fa-database"></i> <span>Seed Data</span>
+        </button>
+        <button id="addBookBtn" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> <span>Add Book</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+    
+    <!-- Analytics / Stats Dashboard -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">
+            <i class="fa-solid fa-books"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Total Books</span>
+            <h3 id="statTotalBooks" class="stat-value">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-emerald">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Total Inventory</span>
+            <h3 id="statTotalStock" class="stat-value">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-amber">
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Avg Rating</span>
+            <h3 id="statAvgRating" class="stat-value">0.0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-purple">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div class="stat-details">
+            <span class="stat-label">Active Genres</span>
+            <h3 id="statTotalGenres" class="stat-value">0</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolbar / Controls Section -->
+    <section class="toolbar-section">
+      <div class="toolbar-container">
+        
+        <!-- Genre Filter Pills -->
+        <div class="genre-pills" id="genrePills">
+          <button class="pill active" data-genre="All">All Books</button>
+          <button class="pill" data-genre="Classic">Classic</button>
+          <button class="pill" data-genre="Fantasy">Fantasy</button>
+          <button class="pill" data-genre="Dystopian">Dystopian</button>
+          <button class="pill" data-genre="Sci-Fi">Sci-Fi</button>
+          <button class="pill" data-genre="Technology">Technology</button>
+          <button class="pill" data-genre="Self-Help">Self-Help</button>
+        </div>
+
+        <!-- Sort & View Controls -->
+        <div class="control-group">
+          <div class="select-wrapper">
+            <i class="fa-solid fa-arrow-down-short-wide select-icon"></i>
+            <select id="sortBySelect">
+              <option value="id">Sort by ID</option>
+              <option value="title">Sort by Title</option>
+              <option value="author">Sort by Author</option>
+              <option value="publishedYear">Sort by Year</option>
+              <option value="price">Sort by Price</option>
+              <option value="rating">Sort by Rating</option>
+            </select>
+          </div>
+
+          <button id="sortOrderBtn" class="btn-icon-box" title="Toggle Sort Direction (Ascending / Descending)">
+            <i class="fa-solid fa-arrow-up-a-z" id="sortOrderIcon"></i>
+          </button>
+
+          <div class="view-toggle">
+            <button id="gridViewBtn" class="view-btn active" title="Grid View">
+              <i class="fa-solid fa-border-all"></i>
+            </button>
+            <button id="tableViewBtn" class="view-btn" title="Table View">
+              <i class="fa-solid fa-list"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Book Collection Catalog Section -->
+    <section class="catalog-section">
+      <!-- Loading Spinner -->
+      <div id="loadingState" class="loading-container hidden">
+        <div class="spinner"></div>
+        <p>Fetching book collection...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-container hidden">
+        <div class="empty-icon">
+          <i class="fa-solid fa-book-open"></i>
+        </div>
+        <h3>No Books Found</h3>
+        <p>We couldn't find any books matching your criteria. Try resetting filters or adding a new book.</p>
+        <div class="empty-actions">
+          <button id="resetFilterBtn" class="btn btn-secondary"><i class="fa-solid fa-rotate-left"></i> Reset Filters</button>
+          <button id="emptySeedBtn" class="btn btn-primary"><i class="fa-solid fa-database"></i> Seed Sample Books</button>
+        </div>
+      </div>
+
+      <!-- Grid View Container -->
+      <div id="bookGrid" class="book-grid"></div>
+
+      <!-- Table View Container -->
+      <div id="bookTableWrapper" class="table-wrapper hidden">
+        <table class="book-table">
+          <thead>
+            <tr>
+              <th>Cover</th>
+              <th>Title & Author</th>
+              <th>Genre</th>
+              <th>Year</th>
+              <th>Price</th>
+              <th>Rating</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Create / Edit Book Modal -->
+  <div id="bookModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle"><i class="fa-solid fa-plus-circle"></i> Add New Book</h3>
+        <button id="closeModalBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="bookForm" class="modal-body">
+        <input type="hidden" id="bookId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookTitle">Book Title <span class="required">*</span></label>
+            <input type="text" id="bookTitle" required placeholder="e.g. The Hobbit">
+          </div>
+          <div class="form-group">
+            <label for="bookAuthor">Author Name <span class="required">*</span></label>
+            <input type="text" id="bookAuthor" required placeholder="e.g. J.R.R. Tolkien">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookGenre">Genre</label>
+            <select id="bookGenre">
+              <option value="Fantasy">Fantasy</option>
+              <option value="Classic">Classic</option>
+              <option value="Dystopian">Dystopian</option>
+              <option value="Sci-Fi">Sci-Fi</option>
+              <option value="Technology">Technology</option>
+              <option value="Self-Help">Self-Help</option>
+              <option value="Fiction">Fiction</option>
+              <option value="Non-Fiction">Non-Fiction</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bookYear">Published Year</label>
+            <input type="number" id="bookYear" min="1000" max="2099" placeholder="e.g. 1937">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookPrice">Price ($)</label>
+            <input type="number" id="bookPrice" step="0.01" min="0" placeholder="14.99">
+          </div>
+          <div class="form-group">
+            <label for="bookRating">Rating (1.0 - 5.0)</label>
+            <input type="number" id="bookRating" step="0.1" min="1" max="5" placeholder="4.8">
+          </div>
+          <div class="form-group">
+            <label for="bookStock">Stock Quantity</label>
+            <input type="number" id="bookStock" min="0" placeholder="25">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookCover">Cover Image URL</label>
+          <input type="url" id="bookCover" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="form-group">
+          <label for="bookDescription">Book Description</label>
+          <textarea id="bookDescription" rows="3" placeholder="Provide a brief summary or storyline of the book..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="saveBookBtn" class="btn btn-primary">
+            <i class="fa-solid fa-check"></i> <span id="saveBtnText">Save Book</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Book Details Modal -->
+  <div id="detailModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-circle-info"></i> Book Information</h3>
+        <button id="closeDetailBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="detail-body">
+        <div class="detail-cover-container">
+          <img id="detailCover" src="" alt="Book Cover">
+        </div>
+        <div class="detail-info">
+          <span id="detailGenre" class="badge badge-genre">Genre</span>
+          <h2 id="detailTitle">Title</h2>
+          <h4 id="detailAuthor">by Author</h4>
+
+          <div class="detail-meta-grid">
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-solid fa-calendar"></i> Published</span>
+              <span id="detailYear" class="meta-value">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-solid fa-star"></i> Rating</span>
+              <span id="detailRating" class="meta-value">-</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-solid fa-tag"></i> Price</span>
+              <span id="detailPrice" class="meta-value">$0.00</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label"><i class="fa-solid fa-warehouse"></i> In Stock</span>
+              <span id="detailStock" class="meta-value">0 copies</span>
+            </div>
+            <div class="meta-item full-width">
+              <span class="meta-label"><i class="fa-solid fa-barcode"></i> ISBN</span>
+              <span id="detailIsbn" class="meta-value font-mono">-</span>
+            </div>
+          </div>
+
+          <div class="detail-description">
+            <h5>Description</h5>
+            <p id="detailDescriptionText">No description provided.</p>
+          </div>
+
+          <div class="detail-actions">
+            <button id="detailEditBtn" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"></i> Edit Book</button>
+            <button id="detailDeleteBtn" class="btn btn-danger"><i class="fa-solid fa-trash-can"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="deleteModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-small">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Delete Book</h3>
+        <button id="closeDeleteBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body text-center">
+        <p>Are you sure you want to delete <strong id="deleteBookTitle">this book</strong>?</p>
+        <p class="text-subtle">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete Book</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Docs & Playground Modal -->
+  <div id="apiDocsModal" class="modal-backdrop hidden">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-terminal"></i> Book Store REST API Playground</h3>
+        <button id="closeApiDocsBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="api-docs-body">
+        <div class="api-endpoints-list">
+          <div class="endpoint-item active" data-endpoint="get-books">
+            <span class="http-method get">GET</span>
+            <span class="endpoint-path">/api/books</span>
+          </div>
+          <div class="endpoint-item" data-endpoint="get-book-by-id">
+            <span class="http-method get">GET</span>
+            <span class="endpoint-path">/api/books/:id</span>
+          </div>
+          <div class="endpoint-item" data-endpoint="post-books">
+            <span class="http-method post">POST</span>
+            <span class="endpoint-path">/api/books</span>
+          </div>
+          <div class="endpoint-item" data-endpoint="put-books">
+            <span class="http-method put">PUT</span>
+            <span class="endpoint-path">/api/books/:id</span>
+          </div>
+          <div class="endpoint-item" data-endpoint="delete-books">
+            <span class="http-method delete">DELETE</span>
+            <span class="endpoint-path">/api/books/:id</span>
+          </div>
+          <div class="endpoint-item" data-endpoint="get-stats">
+            <span class="http-method get">GET</span>
+            <span class="endpoint-path">/api/books/stats</span>
+          </div>
+        </div>
+
+        <div class="api-tester-pane">
+          <div class="tester-header">
+            <h4 id="apiMethodTitle"><span class="http-method get">GET</span> /api/books</h4>
+            <button id="runApiTestBtn" class="btn btn-primary btn-sm"><i class="fa-solid fa-paper-plane"></i> Send Request</button>
+          </div>
+          
+          <div class="tester-content">
+            <p id="apiDesc" class="api-desc">Fetch list of books with optional search, genre, sortBy, and order parameters.</p>
+            
+            <div id="requestBodyContainer" class="request-body-box hidden">
+              <label>Request JSON Body:</label>
+              <textarea id="apiRequestJson" rows="5" class="code-editor"></textarea>
+            </div>
+
+            <div class="response-box">
+              <div class="response-header">
+                <span>Response Output:</span>
+                <span id="responseStatus" class="status-badge">200 OK</span>
+              </div>
+              <pre id="apiResponseJson" class="response-code">Click "Send Request" to test endpoint live...</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
