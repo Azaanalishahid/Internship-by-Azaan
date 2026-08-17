@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEConnect • Supabase Express Gateway</title>
+  <style>
+    :root {
+      --bg-deep: #070a12;
+      --bg-surface: rgba(15, 22, 38, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.12);
+      --border-active: rgba(0, 242, 254, 0.4);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --accent-cyan: #00f2fe;
+      --accent-blue: #38bdf8;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .glow-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(150px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    .orb-1 { width: 500px; height: 500px; top: -150px; left: -100px; background: radial-gradient(circle, var(--accent-cyan), var(--accent-blue)); }
+    .orb-2 { width: 600px; height: 600px; bottom: -200px; right: -150px; background: radial-gradient(circle, var(--accent-purple), #ec4899); }
+    .orb-3 { width: 400px; height: 400px; top: 40%; left: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(16, 185, 129, 0.2), transparent); }
+
+    .app-layout {
+      width: 100%;
+      max-width: 1040px;
+      padding: 2rem 1.5rem;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1.75rem;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .nav-brand { display: flex; align-items: center; gap: 1rem; }
+
+    .brand-logo {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      padding: 3px;
+    }
+
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .brand-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; }
+    .gradient-text { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand-tag { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; display: block; }
+
+    .nav-sections {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(11, 17, 30, 0.9);
+      padding: 0.4rem;
+      border-radius: 40px;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: 30px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    .nav-pill:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.08); }
+
+    .nav-pill.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(56, 189, 248, 0.25));
+      border: 1px solid var(--border-active);
+      box-shadow: 0 4px 20px rgba(0, 242, 254, 0.2);
+    }
+
+    .active-dot-indicator { width: 7px; height: 7px; border-radius: 50%; background: var(--text-secondary); transition: background 0.3s; }
+    .active-dot-indicator.online { background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); }
+
+    .server-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--accent-emerald);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-emerald);
+      box-shadow: 0 0 12px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* Section Views Display Rules */
+    .section-view { display: none !important; }
+    .section-view.active-section { display: block !important; animation: slideUpFade 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-panel {
+      background: var(--bg-surface);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-split { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.35rem 0.9rem;
+      border-radius: 20px;
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      color: var(--accent-cyan);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title { font-size: 2.3rem; font-weight: 800; line-height: 1.25; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    .hero-desc { color: var(--text-secondary); font-size: 1rem; line-height: 1.6; margin-bottom: 2rem; }
+
+    .feature-list { display: flex; flex-direction: column; gap: 1.25rem; }
+    .feature-item { display: flex; align-items: flex-start; gap: 1rem; }
+
+    .feat-icon {
+      font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .feature-item h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .feature-item p { font-size: 0.85rem; color: var(--text-secondary); }
+
+    .quick-fill-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+    }
+
+    .quick-fill-box h4 { font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .quick-fill-box p { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+
+    .demo-chip {
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .demo-chip:hover { background: rgba(56, 189, 248, 0.3); }
+
+    .card-title-group { margin-bottom: 1.75rem; }
+    .card-title-group h3 { font-size: 1.6rem; font-weight: 700; }
+    .card-title-group p { color: var(--text-secondary); font-size: 0.88rem; }
+
+    .field-group { margin-bottom: 1.25rem; }
+    .field-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.45rem; }
+
+    .input-field { position: relative; display: flex; align-items: center; }
+    .field-icon { position: absolute; left: 1rem; font-size: 1rem; pointer-events: none; opacity: 0.75; }
+
+    .input-field input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      background: rgba(6, 10, 18, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-field input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); }
+
+    .toggle-pwd-btn { position: absolute; right: 0.8rem; background: transparent; border: none; cursor: pointer; font-size: 1rem; opacity: 0.7; }
+    .toggle-pwd-btn:hover { opacity: 1; }
+
+    .cta-button {
+      width: 100%;
+      padding: 0.95rem;
+      border-radius: var(--radius-md);
+      border: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+
+    .primary-gradient { background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: #070a12; box-shadow: 0 6px 20px rgba(0, 242, 254, 0.3); }
+    .primary-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 242, 254, 0.45); }
+
+    .secondary-gradient { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); box-shadow: 0 6px 20px rgba(168, 85, 247, 0.3); }
+    .secondary-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(168, 85, 247, 0.45); }
+
+    .ghost-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+    .ghost-btn:hover { background: rgba(255, 255, 255, 0.15); }
+    .small-btn { width: auto; padding: 0.65rem 1.5rem; }
+
+    .loader-spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+
+    .switch-foot { margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-secondary); }
+    .link-btn { background: transparent; border: none; color: var(--accent-cyan); font-weight: 700; cursor: pointer; font-size: 0.85rem; font-family: var(--font-sans); }
+    .link-btn:hover { text-decoration: underline; }
+
+    .guidance-banner { margin-top: 1.5rem; padding: 1rem 1.25rem; border-radius: var(--radius-md); background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fef08a; font-size: 0.85rem; }
+    .banner-header { font-weight: 700; margin-bottom: 0.3rem; color: #fbbf24; }
+
+    .empty-card { text-align: center; padding: 4rem 2rem; max-width: 540px; margin: 0 auto; }
+    .empty-badge { display: inline-block; padding: 0.35rem 0.9rem; border-radius: 20px; background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--accent-rose); font-weight: 700; font-size: 0.8rem; margin-bottom: 1rem; }
+    .empty-card h2 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .empty-card p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem; }
+    .empty-actions { display: flex; gap: 1rem; justify-content: center; }
+
+    .logged-in-container { display: flex; flex-direction: column; gap: 1.75rem; }
+    .profile-hero-card { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .user-avatar-badge { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); color: #070a12; font-size: 1.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0, 242, 254, 0.35); flex-shrink: 0; }
+    .user-hero-meta { flex: 1; }
+    .user-hero-meta h2 { font-size: 1.75rem; font-weight: 800; line-height: 1.2; }
+    .user-hero-meta p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.6rem; }
+    .badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .status-chip { padding: 0.25rem 0.75rem; border-radius: 14px; font-size: 0.78rem; font-weight: 700; }
+    .status-chip.active { background: rgba(16, 185, 129, 0.18); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.35); }
+    .status-chip.db { background: rgba(56, 189, 248, 0.18); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.35); }
+
+    .profile-actions { display: flex; gap: 0.6rem; }
+    .action-btn { padding: 0.65rem 1.25rem; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-family: var(--font-sans); }
+    .refresh-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-subtle); color: var(--text-primary); }
+    .refresh-btn:hover { background: rgba(255, 255, 255, 0.15); }
+    .logout-btn { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--accent-rose); }
+    .logout-btn:hover { background: rgba(244, 63, 94, 0.25); }
+
+    .profile-grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+    .stat-card { padding: 1.35rem; display: flex; align-items: center; gap: 1.1rem; }
+    .stat-icon { font-size: 1.8rem; background: rgba(255, 255, 255, 0.05); width: 52px; height: 52px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-subtle); flex-shrink: 0; }
+    .stat-content { display: flex; flex-direction: column; overflow: hidden; }
+    .stat-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-bottom: 0.2rem; }
+    .stat-value { font-size: 1rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+    .stat-value.code-font { font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent-cyan); }
+
+    .toast-wrapper { position: fixed; bottom: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 0.75rem; z-index: 9999; }
+    .toast-msg { padding: 0.9rem 1.35rem; border-radius: var(--radius-md); background: #1e293b; border: 1px solid var(--border-subtle); color: #ffffff; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6); animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .toast-msg.success { border-left: 4px solid var(--accent-emerald); }
+    .toast-msg.error { border-left: 4px solid var(--accent-rose); }
+    @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .app-footer { margin-top: auto; padding-top: 2.5rem; text-align: center; font-size: 0.82rem; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <!-- Ambient Gradient Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <div class="app-layout">
+    
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <img src="weconnect-logo.jpg" alt="WEConnect Logo" class="brand-logo-img">
+        </div>
+        <div class="brand-meta">
+          <h1 class="brand-name">WE<span class="gradient-text">Connect</span></h1>
+          <span class="brand-tag">Express + Supabase Auth Gateway</span>
+        </div>
+      </div>
+
+      <!-- Main 3 Navigation Sections -->
+      <nav class="nav-sections">
+        <button class="nav-pill active" data-section="signup-section">
+          <span class="pill-icon">✨</span>
+          <span>1. Sign Up</span>
+        </button>
+        <button class="nav-pill" data-section="login-section">
+          <span class="pill-icon">🔑</span>
+          <span>2. Sign In</span>
+        </button>
+        <button class="nav-pill" data-section="profile-section">
+          <span class="pill-icon">👤</span>
+          <span>3. User Profile</span>
+          <span class="active-dot-indicator" id="session-dot"></span>
+        </button>
+      </nav>
+
+      <!-- System Status Indicator -->
+      <div class="server-badge" id="server-status-badge">
+        <span class="pulse-dot"></span>
+        <span id="server-status-text">Server Active</span>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-content">
+      
+      <!-- ================= SECTION 1: SIGN UP ================= -->
+      <section id="signup-section" class="section-view active-section">
+        <div class="hero-split">
+          
+          <div class="hero-info">
+            <div class="hero-badge">🚀 Instant Registration</div>
+            <h2 class="hero-title">Create Your Premium Account</h2>
+            <p class="hero-desc">Register your account to unlock instant access. Your profile will be safely created in Supabase Auth & synced with your database.</p>
+            
+            <div class="feature-list">
+              <div class="feature-item">
+                <div class="feat-icon">🔒</div>
+                <div>
+                  <h4>Bank-Grade Security</h4>
+                  <p>Encrypted credentials and protected JWT authentication.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feat-icon">⚡</div>
+                <div>
+                  <h4>Instant Session</h4>
+                  <p>Seamless sign-up and auto-redirect to sign in screen.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-form-card glass-panel">
+            <div class="card-title-group">
+              <h3>Create Account</h3>
+              <p>Fill in your details below</p>
+            </div>
+
+            <form id="signup-form">
+              <div class="field-group">
+                <label for="signup-name">Full Name</label>
+                <div class="input-field">
+                  <span class="field-icon">👤</span>
+                  <input type="text" id="signup-name" placeholder="Islam Jutt" required value="Islam Jutt">
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="signup-email">Email Address</label>
+                <div class="input-field">
+                  <span class="field-icon">✉️</span>
+                  <input type="email" id="signup-email" placeholder="name@domain.com" required value="islamjutt.dev@gmail.com">
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="signup-password">Password (Minimum 6 characters)</label>
+                <div class="input-field">
+                  <span class="field-icon">🔑</span>
+                  <input type="password" id="signup-password" placeholder="••••••••" required value="SuperSecret123!">
+                  <button type="button" class="toggle-pwd-btn">👁️</button>
+                </div>
+              </div>
+
+              <button type="submit" class="cta-button primary-gradient" id="signup-btn">
+                <span>Create Account Now</span>
+                <div class="loader-spinner hidden" id="signup-spin"></div>
+              </button>
+            </form>
+
+            <div class="switch-foot">
+              <span>Already registered? <button class="link-btn" onclick="switchSection('login-section')">Sign In here ➔</button></span>
+            </div>
+
+            <div id="rate-limit-banner" class="guidance-banner hidden">
+              <div class="banner-header">💡 Supabase Email Rate Limit Fix</div>
+              <p>If you encounter <code>rate limit exceeded</code>: Open <strong>Supabase Dashboard ➔ Authentication ➔ Providers ➔ Email</strong> and turn <strong>OFF "Confirm email"</strong>.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= SECTION 2: LOGIN ================= -->
+      <section id="login-section" class="section-view">
+        <div class="hero-split">
+
+          <div class="hero-info">
+            <div class="hero-badge">🔐 Authentication Gateway</div>
+            <h2 class="hero-title">Welcome Back to WEConnect</h2>
+            <p class="hero-desc">Sign in with your email & password to open your authenticated user profile dashboard.</p>
+            
+            <div class="quick-fill-box">
+              <h4>⚡ Quick Demo Credentials</h4>
+              <p>Click below to pre-fill test user details:</p>
+              <div class="chip-group">
+                <button type="button" class="demo-chip" id="fill-demo-btn">Fill Demo User</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-form-card glass-panel">
+            <div class="card-title-group">
+              <h3>Sign In</h3>
+              <p>Enter your account credentials</p>
+            </div>
+
+            <form id="login-form">
+              <div class="field-group">
+                <label for="login-email">Email Address</label>
+                <div class="input-field">
+                  <span class="field-icon">✉️</span>
+                  <input type="email" id="login-email" placeholder="name@domain.com" required value="islamjutt.dev@gmail.com">
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="login-password">Password</label>
+                <div class="input-field">
+                  <span class="field-icon">🔑</span>
+                  <input type="password" id="login-password" placeholder="••••••••" required value="SuperSecret123!">
+                  <button type="button" class="toggle-pwd-btn">👁️</button>
+                </div>
+              </div>
+
+              <button type="submit" class="cta-button secondary-gradient" id="login-btn">
+                <span>Authenticate & Sign In</span>
+                <div class="loader-spinner hidden" id="login-spin"></div>
+              </button>
+            </form>
+
+            <div class="switch-foot">
+              <span>Don't have an account yet? <button class="link-btn" onclick="switchSection('signup-section')">Sign Up here ➔</button></span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= SECTION 3: USER PROFILE ================= -->
+      <section id="profile-section" class="section-view">
+        <div class="profile-dashboard">
+          
+          <!-- Empty State when logged out -->
+          <div id="logged-out-state" class="glass-panel empty-card">
+            <div class="empty-badge">🔒 Access Restricted</div>
+            <h2>No Active Session</h2>
+            <p>Please Sign In or Create an Account to view your authenticated profile dashboard.</p>
+            <div class="empty-actions">
+              <button class="cta-button primary-gradient small-btn" onclick="switchSection('login-section')">Go to Sign In</button>
+              <button class="cta-button ghost-btn small-btn" onclick="switchSection('signup-section')">Create Account</button>
+            </div>
+          </div>
+
+          <!-- Active Session View with Clean Profile Fields -->
+          <div id="logged-in-state" class="logged-in-container hidden">
+            
+            <!-- User Info Header Card -->
+            <div class="glass-panel profile-hero-card">
+              <div class="user-avatar-badge" id="avatar-letters">IJ</div>
+              <div class="user-hero-meta">
+                <h2 id="profile-display-name">Islam Jutt</h2>
+                <p id="profile-display-email">islamjutt.dev@gmail.com</p>
+                <div class="badge-row">
+                  <span class="status-chip active">● Active Session</span>
+                  <span class="status-chip db">✔ Authenticated</span>
+                </div>
+              </div>
+              <div class="profile-actions">
+                <button class="action-btn refresh-btn" id="refresh-btn">🔄 Refresh Session</button>
+                <button class="action-btn logout-btn" id="logout-btn">🚪 Sign Out</button>
+              </div>
+            </div>
+
+            <!-- Detailed Grid Info Cards -->
+            <div class="profile-grid-cards">
+              
+              <div class="glass-panel stat-card">
+                <div class="stat-icon">🆔</div>
+                <div class="stat-content">
+                  <span class="stat-label">User ID (UUID)</span>
+                  <span class="stat-value code-font" id="val-user-id">-</span>
+                </div>
+              </div>
+
+              <div class="glass-panel stat-card">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-content">
+                  <span class="stat-label">Account Status</span>
+                  <span class="stat-value" id="val-status">Active</span>
+                </div>
+              </div>
+
+              <div class="glass-panel stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                  <span class="stat-label">Member Since</span>
+                  <span class="stat-value" id="val-created-at">-</span>
+                </div>
+              </div>
+
+              <div class="glass-panel stat-card">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-content">
+                  <span class="stat-label">Last Active Session</span>
+                  <span class="stat-value" id="val-last-login">-</span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-wrapper" class="toast-wrapper"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>WEConnect Gateway • Powered by <strong>Express.js</strong> & <strong>Supabase Engine</strong></p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
