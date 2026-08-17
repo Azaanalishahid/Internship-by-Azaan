@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PulsePosts - Personal Workspace</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles.css?v=4" />
+    <script defer src="app.js?v=4"></script>
+  </head>
+  <body>
+    <!-- Ambient Glowing Background Orbs -->
+    <div class="ambient-glow orb-1"></div>
+    <div class="ambient-glow orb-2"></div>
+    <div class="ambient-glow orb-3"></div>
+
+    <div class="app">
+      <!-- Header / Brand Hero -->
+      <header class="hero">
+        <div class="hero-brand">
+          <div class="brand-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="eyebrow">Personal Space</div>
+            <h1>PulsePosts</h1>
+          </div>
+        </div>
+        <p class="lede">Manage & isolate your personal notes, ideas, and posts effortlessly with Supabase cloud database.</p>
+      </header>
+
+      <div class="app-layout">
+        <!-- Sidebar Controls: User Profile & New Post -->
+        <aside class="sidebar">
+          <!-- User Switcher Panel -->
+          <section class="panel user-panel">
+            <div class="panel-header">
+              <span class="panel-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+              <h2>User Workspace</h2>
+            </div>
+            
+            <div class="active-user-card" id="activeUserCard">
+              <div class="avatar" id="userAvatar">?</div>
+              <div class="user-info">
+                <div class="user-name-display" id="userNameDisplay">No user selected</div>
+                <div class="user-status-tag" id="userStatusTag">
+                  <span class="status-dot"></span>
+                  <span id="userPostCount">0 posts</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="user-input-group">
+              <label for="userName">Switch User Context</label>
+              <div class="input-with-button">
+                <input id="userName" type="text" placeholder="Enter name (e.g. Ayesha)" autocomplete="off" />
+                <button id="setUser" class="btn btn-primary btn-sm">Set</button>
+              </div>
+            </div>
+
+            <div class="quick-users">
+              <span class="quick-label">Quick switch:</span>
+              <div class="quick-chips">
+                <button type="button" class="chip-btn" data-user="Ayesha">Ayesha</button>
+                <button type="button" class="chip-btn" data-user="Ali">Ali</button>
+                <button type="button" class="chip-btn" data-user="Sara">Sara</button>
+                <button type="button" class="chip-btn" data-user="Zain">Zain</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Add Post Form Panel -->
+          <section class="panel form-panel">
+            <div class="panel-header">
+              <span class="panel-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </span>
+              <h2>Create New Post</h2>
+            </div>
+
+            <form id="postForm" class="form">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <div class="category-selector" id="categorySelector">
+                  <button type="button" class="cat-chip active" data-cat="General">💬 General</button>
+                  <button type="button" class="cat-chip" data-cat="Idea">💡 Idea</button>
+                  <button type="button" class="cat-chip" data-cat="Note">📝 Note</button>
+                  <button type="button" class="cat-chip" data-cat="Project">🚀 Project</button>
+                  <button type="button" class="cat-chip" data-cat="Goal">🎯 Goal</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="title">Title</label>
+                <input id="title" type="text" placeholder="e.g. Redesign Landing Page" required />
+              </div>
+
+              <div class="form-group">
+                <div class="label-with-counter">
+                  <label for="content">Content</label>
+                  <span class="char-counter" id="charCounter">0 / 500</span>
+                </div>
+                <textarea id="content" rows="4" placeholder="Write details about your post..." maxlength="500" required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-accent btn-full">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Publish Post
+              </button>
+            </form>
+          </section>
+        </aside>
+
+        <!-- Main Content Area: Search & Feed -->
+        <main class="main-content">
+          <section class="panel feed-panel">
+            <div class="feed-header">
+              <div>
+                <h2>Posts Workspace</h2>
+                <p id="status" class="status">Connecting to Supabase...</p>
+              </div>
+              <button id="clearAll" class="btn btn-ghost danger-ghost" title="Clear all posts for current user">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Clear All
+              </button>
+            </div>
+
+            <!-- Search & Filter Control Bar -->
+            <div class="filter-bar">
+              <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Filter posts by title or text..." />
+              </div>
+              <div class="filter-tabs" id="filterTabs">
+                <button class="filter-tab active" data-filter="All">All</button>
+                <button class="filter-tab" data-filter="General">General</button>
+                <button class="filter-tab" data-filter="Idea">Idea</button>
+                <button class="filter-tab" data-filter="Note">Note</button>
+                <button class="filter-tab" data-filter="Project">Project</button>
+                <button class="filter-tab" data-filter="Goal">Goal</button>
+              </div>
+            </div>
+
+            <!-- Posts List Container -->
+            <div id="posts" class="posts-grid"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Edit Post Modal -->
+    <div class="modal-backdrop" id="editModal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Edit Post</h3>
+          <button type="button" class="close-btn" id="closeEditModal">&times;</button>
+        </div>
+        <form id="editForm">
+          <input type="hidden" id="editPostId" />
+          <div class="form-group">
+            <label for="editCategory">Category</label>
+            <select id="editCategory" class="select-input">
+              <option value="General">💬 General</option>
+              <option value="Idea">💡 Idea</option>
+              <option value="Note">📝 Note</option>
+              <option value="Project">🚀 Project</option>
+              <option value="Goal">🎯 Goal</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editTitle">Title</label>
+            <input id="editTitle" type="text" required />
+          </div>
+          <div class="form-group">
+            <label for="editContent">Content</label>
+            <textarea id="editContent" rows="5" required></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" id="cancelEditModal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+  </body>
+</html>
