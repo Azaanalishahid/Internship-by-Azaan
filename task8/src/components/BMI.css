@@ -1,0 +1,218 @@
+.bmi-section {
+  background-color: var(--bg-main);
+}
+
+.bmi-card-wrapper {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.bmi-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+
+.bmi-form-col {
+  padding: 3.5rem 3rem;
+}
+
+.bmi-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.bmi-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+
+.unit-selector {
+  display: flex;
+  background: var(--bg-main);
+  padding: 0.35rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 1.75rem;
+  width: fit-content;
+  border: 1px solid var(--border-light);
+}
+
+.unit-btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.unit-btn.active {
+  background: var(--secondary-blue);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.bmi-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.bmi-input {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-light);
+  font-size: 1rem;
+  color: var(--text-dark);
+  transition: var(--transition-fast);
+  background: var(--bg-main);
+}
+
+.bmi-input:focus {
+  border-color: var(--secondary-blue);
+  outline: none;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.bmi-result-col {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 3.5rem 3rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-display-card {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-header h3 {
+  color: #ffffff;
+  font-size: 1.3rem;
+}
+
+.bmi-value-circle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 6px solid #10b981;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+}
+
+.bmi-number {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.bmi-unit-text {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-tag {
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 0.35rem 1.25rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.category-desc {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.55;
+  margin-bottom: 1.75rem;
+  max-width: 320px;
+}
+
+.bmi-scale-bar {
+  display: flex;
+  width: 100%;
+  height: 28px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.scale-segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.seg-under { background: #3b82f6; }
+.seg-normal { background: #10b981; }
+.seg-over { background: #f97316; }
+.seg-obese { background: #ef4444; }
+
+.result-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.775rem;
+  color: #94a3b8;
+  text-align: left;
+}
+
+@media (max-width: 992px) {
+  .bmi-grid {
+    grid-template-columns: 1fr;
+  }
+  .bmi-form-col {
+    padding: 2.5rem 1.75rem;
+  }
+  .bmi-result-col {
+    padding: 2.5rem 1.75rem;
+  }
+}
